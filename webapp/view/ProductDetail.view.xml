@@ -63,54 +63,62 @@
         </f:header>
 
         <f:content>
-            <layout:FixFlex id="mainFixFlex" fixContentSize="350px">
-                <layout:fixContent>
-                    <Panel id="categoryHierarchyPanel" headerText="{i18n>categoryHierarchy}" expandable="true" expanded="true" width="auto" class="sapUiNoMarginBottom sapUiTinyMarginBeginEnd" backgroundDesign="Solid">
-                        <tree:TreeTable
-                            id="categoryTree"
-                            rows="{local>/categoryTree}"
-                            selectionMode="Single"
-                            enableSelectAll="false"
-                            visibleRowCount="6"
-                            rowHeight="28px"
-                            minAutoRowCount="3"
-                            fixedRowCount="0">
-                            <tree:extension>
-                                <Toolbar id="categoryTreeToolbar" style="Clear" height="2rem">
-                                    <Title id="categoryTreeTitle" text="{i18n>categoryTree}" level="H3"/>
-                                </Toolbar>
-                            </tree:extension>
-                            <tree:columns>
-                                <tree:Column id="categoryNameColumn" width="100%">
-                                    <Label id="categoryNameLabel" text="{i18n>categoryName}"/>
-                                    <tree:template>
-                                        <Text id="categoryNameText" text="{local>CategoryName}" wrapping="false"/>
-                                    </tree:template>
-                                </tree:Column>
-                            </tree:columns>
-                        </tree:TreeTable>
-                    </Panel>
-                    
-                    <!-- 类别详情 -->
-                    <Panel id="selectedCategoryPanel" headerText="{i18n>selectedCategoryDetails}" expandable="true" expanded="true" backgroundDesign="Solid" width="auto" class="sapUiTinyMarginBeginEnd">
-                        <FlexBox id="categoryDetailsFlexBox" direction="Column" width="100%" class="sapUiTinyMargin">
-                            <FlexBox id="categoryIdFlexBox" alignItems="Center" class="sapUiTinyMarginBottom">
-                                <Label id="categoryIdLabel" text="{i18n>categoryId}:" class="sapUiTinyMarginEnd productLabel"/>
-                                <ObjectNumber id="categoryIdValue" number="{local>/selectedCategory/CategoryID}" emphasized="false"/>
-                            </FlexBox>
-                            <FlexBox id="categoryNameFlexBox" alignItems="Center" class="sapUiTinyMarginBottom">
-                                <Label id="categoryNameDetailsLabel" text="{i18n>categoryName}:" class="sapUiTinyMarginEnd productLabel"/>
-                                <Text id="categoryNameDetailsText" text="{local>/selectedCategory/CategoryName}"/>
-                            </FlexBox>
-                            <FlexBox id="categoryDescFlexBox" alignItems="Start">
-                                <Label id="categoryDescriptionLabel" text="{i18n>description}:" class="sapUiTinyMarginEnd productLabel sapUiTinyMarginTop"/>
-                                <Text id="categoryDescriptionText" text="{local>/selectedCategory/Description}" width="80%"/>
-                            </FlexBox>
+            <!-- 将布局改成左右布局，使用SplitContainer替代FixFlex -->
+            <SplitContainer id="mainSplitContainer">
+                <!-- 左侧（类别和类别详情）- 占30% -->
+                <masterPages>
+                    <ScrollContainer id="categoryContainer" height="100%" width="100%" vertical="true" horizontal="false">
+                        <FlexBox id="categoryFlexBox1" direction="Column" width="100%">
+                            <!-- 类别树 -->
+                            <Panel id="categoryHierarchyPanel" headerText="{i18n>categoryHierarchy}" expandable="true" expanded="true" width="auto" class="sapUiNoMarginBottom sapUiTinyMarginBeginEnd" backgroundDesign="Solid">
+                                <tree:TreeTable
+                                    id="categoryTree"
+                                    rows="{local>/categoryTree}"
+                                    selectionMode="Single"
+                                    enableSelectAll="false"
+                                    visibleRowCount="6"
+                                    rowHeight="28px"
+                                    minAutoRowCount="3"
+                                    fixedRowCount="0">
+                                    <tree:extension>
+                                        <Toolbar id="categoryTreeToolbar" style="Clear" height="2rem">
+                                            <Title id="categoryTreeTitle" text="{i18n>categoryTree}" level="H3"/>
+                                        </Toolbar>
+                                    </tree:extension>
+                                    <tree:columns>
+                                        <tree:Column id="categoryNameColumn" width="100%">
+                                            <Label id="categoryNameLabel" text="{i18n>categoryName}"/>
+                                            <tree:template>
+                                                <Text id="categoryNameText" text="{local>CategoryName}" wrapping="false"/>
+                                            </tree:template>
+                                        </tree:Column>
+                                    </tree:columns>
+                                </tree:TreeTable>
+                            </Panel>
+                            
+                            <!-- 类别详情 -->
+                            <Panel id="selectedCategoryPanel" headerText="{i18n>selectedCategoryDetails}" expandable="true" expanded="true" backgroundDesign="Solid" width="auto" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTop">
+                                <FlexBox id="categoryDetailsFlexBox" direction="Column" width="100%" class="sapUiTinyMargin">
+                                    <FlexBox id="categoryIdFlexBox" alignItems="Center" class="sapUiTinyMarginBottom">
+                                        <Label id="categoryIdLabel" text="{i18n>categoryId}:" class="sapUiTinyMarginEnd productLabel"/>
+                                        <ObjectNumber id="categoryIdValue" number="{local>/selectedCategory/CategoryID}" emphasized="false"/>
+                                    </FlexBox>
+                                    <FlexBox id="categoryNameFlexBox" alignItems="Center" class="sapUiTinyMarginBottom">
+                                        <Label id="categoryNameDetailsLabel" text="{i18n>categoryName}:" class="sapUiTinyMarginEnd productLabel"/>
+                                        <Text id="categoryNameDetailsText" text="{local>/selectedCategory/CategoryName}"/>
+                                    </FlexBox>
+                                    <FlexBox id="categoryDescFlexBox" alignItems="Start">
+                                        <Label id="categoryDescriptionLabel" text="{i18n>description}:" class="sapUiTinyMarginEnd productLabel sapUiTinyMarginTop"/>
+                                        <Text id="categoryDescriptionText" text="{local>/selectedCategory/Description}" width="80%"/>
+                                    </FlexBox>
+                                </FlexBox>
+                            </Panel>
                         </FlexBox>
-                    </Panel>
-                </layout:fixContent>
-
-                <layout:flexContent>
+                    </ScrollContainer>
+                </masterPages>
+                
+                <!-- 右侧内容（产品详情）- 占70% -->
+                <detailPages>
                     <ScrollContainer id="productDetailContainer" height="100%" width="100%" vertical="true" horizontal="false">
                         <FlexBox id="productContentFlexBox" direction="Column" width="100%" class="sapUiNoMarginTop">
                             <!-- 产品基本信息卡片 -->
@@ -249,8 +257,8 @@
                             </Panel>
                         </FlexBox>
                     </ScrollContainer>
-                </layout:flexContent>
-            </layout:FixFlex>
+                </detailPages>
+            </SplitContainer>
         </f:content>
 
         <f:footer>
