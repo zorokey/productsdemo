@@ -1,0 +1,76 @@
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:sap="http://www.sap.com/Protocols/SAPData" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+    <edmx:Reference Uri="https://services.odata.org/V2/Northwind/Northwind.svc/$metadata">
+        <edmx:Include Namespace="NorthwindModel" Alias="NorthwindModel"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="NorthwindAnnotations" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <!-- 针对 Product 实体的注解 -->
+            <Annotations Target="NorthwindModel.Product">
+                <!-- 启用基本搜索 -->
+                <Annotation Term="com.sap.vocabularies.Common.v1.SearchSupported" Bool="true"/>
+
+                <!-- 定义 Smart Table 的列（LineItem） -->
+                <Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+                    <Collection>
+                        <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                            <PropertyValue Property="Value" Path="ProductID"/>
+                            <Annotation Term="com.sap.vocabularies.UI.v1.Importance" EnumMember="com.sap.vocabularies.UI.v1.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                            <PropertyValue Property="Value" Path="ProductName"/>
+                            <Annotation Term="com.sap.vocabularies.UI.v1.Importance" EnumMember="com.sap.vocabularies.UI.v1.ImportanceType/High"/>
+                        </Record>
+                        <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                            <PropertyValue Property="Value" Path="UnitPrice"/>
+                            <Annotation Term="com.sap.vocabularies.UI.v1.Importance" EnumMember="com.sap.vocabularies.UI.v1.ImportanceType/Medium"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+
+                <!-- 定义搜索字段（SelectionFields） -->
+                <Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
+                    <Collection>
+                        <PropertyPath>ProductID</PropertyPath>
+                        <PropertyPath>ProductName</PropertyPath>
+                        
+                    </Collection>
+                </Annotation>
+
+                <Annotation Term="com.sap.vocabularies.UI.v1.FieldGroup" Qualifier="ProductDetails">
+                    <Record>
+                        <PropertyValue Property="Label" String="产品详情"/>
+                        <PropertyValue Property="Data">
+                            <Collection>
+                                <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                                    <PropertyValue Property="Value" Path="ProductID"/>
+                                    <Annotation Term="com.sap.vocabularies.Common.v1.Label" String="产品ID"/>
+                                </Record>
+                                <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                                    <PropertyValue Property="Value" Path="ProductName"/>
+                                    <Annotation Term="com.sap.vocabularies.Common.v1.Label" String="产品名称"/>
+                                </Record>
+                                <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                                    <PropertyValue Property="Value" Path="Category/CategoryName"/>
+                                    <Annotation Term="com.sap.vocabularies.Common.v1.Label" String="类别名称"/>
+                                </Record>
+                                <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                                    <PropertyValue Property="Value" Path="UnitPrice"/>
+                                    <Annotation Term="com.sap.vocabularies.Common.v1.Label" String="单价"/>
+                                </Record>
+                                <Record Type="com.sap.vocabularies.UI.v1.DataField">
+                                    <PropertyValue Property="Value" Path="UnitsInStock"/>
+                                    <Annotation Term="com.sap.vocabularies.Common.v1.Label" String="库存"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+
+            <!-- 针对 Products 实体集的注解 -->
+            <Annotations Target="NorthwindModel.NorthwindEntities/Product">
+                <Annotation Term="com.sap.vocabularies.Common.v1.SearchSupported" Bool="true"/>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

@@ -1,0 +1,67 @@
+<mvc:View
+  controllerName="productsdemo.controller.ProductList"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:smartTable="sap.ui.comp.smarttable"
+  xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
+  
+  <Page id="productListPage" title="{i18n>productListTitle}">
+    <content>
+      <VBox id="productListVBox">
+        <smartFilterBar:SmartFilterBar 
+          id="smartFilterBar" 
+          entitySet="Products"
+          persistencyKey="ProductsFilterBar"
+          enableBasicSearch="true">
+        </smartFilterBar:SmartFilterBar>
+        
+        <smartTable:SmartTable
+        id="productsSmartTable"
+        entitySet="Products"
+        tableType="ResponsiveTable"
+        useExportToExcel="true"
+        useVariantManagement="true"
+        useTablePersonalisation="true"
+        header="Products"
+        showRowCount="true"
+        enableAutoBinding="true"
+        smartFilterId="smartFilterBar"
+        persistencyKey="ProductsSmartTable"
+        initiallyVisibleFields="ProductID,ProductName,QuantityPerUnit,UnitPrice,UnitsInStock,Discontinued">
+        <smartTable:customToolbar>
+          <OverflowToolbar id="_IDGenOverflowToolbar1" design="Transparent">
+            <ToolbarSpacer id="_IDGenToolbarSpacer" />
+            <Button
+              id="addButton"
+              text="Add Product"
+              type="Transparent"
+              press="onAddPress" />
+              <Button
+              id="exportVBAButton"
+              text="Export with VBA"
+              icon="sap-icon://excel-attachment"
+              type="Emphasized"
+              press="onExportWithVBA" />
+          </OverflowToolbar>
+        </smartTable:customToolbar>
+        <Table id="productsTable" mode="SingleSelectMaster" itemPress="onProductItemPress">
+          <columns>
+            <!--<Column id="productIDColumn">
+              <Text text="Product ID" id="_IDGenText1" />
+            </Column>
+             这里可以添加其他列 -->
+          </columns>
+          <items>
+            <ColumnListItem id="productColumnListItem" type="Navigation" press="onProductItemPress">
+              <!--<cells>
+                <Text text="{ProductID}" id="_IDGenText" />
+                 这里可以添加其他单元格 
+              </cells>-->
+            </ColumnListItem>
+          </items>
+        </Table>
+      </smartTable:SmartTable>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

@@ -1,0 +1,138 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartForm="sap.ui.comp.smartform"
+    xmlns:smartField="sap.ui.comp.smartfield"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:tree="sap.ui.table"
+    controllerName="productsdemo.controller.ProductDetail">
+
+    <Page title="产品详情" showNavButton="true" navButtonPress="onNavBack">
+        <layout:SplitPane id="splitPane" orientation="Horizontal">
+            <!-- 左侧区域：产品类别树 -->
+            <layout:PaneContainer>
+                <layout:layoutData>
+                    <layout:SplitPaneLayoutData size="30%" resizable="true"/>
+                </layout:layoutData>
+                
+                <Panel headerText="产品类别层次结构" expandable="true" expanded="true" class="sapUiResponsiveMargin">
+                    <tree:TreeTable id="categoryTree"
+                        selectionMode="Single"
+                        enableSelectAll="false"
+                        rows="{path: '/Categories'}"
+                        visibleRowCount="15">
+                        <tree:extension>
+                            <Toolbar>
+                                <Title text="类别树" level="H2"/>
+                            </Toolbar>
+                        </tree:extension>
+                        <tree:columns>
+                            <tree:Column width="15rem">
+                                <Label text="类别名称" />
+                                <tree:template>
+                                    <Text text="{CategoryName}" wrapping="false" />
+                                </tree:template>
+                            </tree:Column>
+                            <tree:Column width="20rem">
+                                <Label text="描述" />
+                                <tree:template>
+                                    <Text text="{Description}" wrapping="true" />
+                                </tree:template>
+                            </tree:Column>
+                        </tree:columns>
+                    </tree:TreeTable>
+                </Panel>
+            </layout:PaneContainer>
+            
+            <!-- 右侧区域：产品详情表单 -->
+            <layout:PaneContainer>
+                <layout:layoutData>
+                    <layout:SplitPaneLayoutData size="70%" resizable="true"/>
+                </layout:layoutData>
+                
+                <Panel headerText="产品详情" expandable="true" expanded="true" class="sapUiResponsiveMargin">
+                    <smartForm:SmartForm id="productForm" 
+                                editable="false" 
+                                entityType="Products">
+                        <smartForm:layout>
+                            <smartForm:Layout columnsM="1" columnsL="2" columnsXL="2"/>
+                        </smartForm:layout>
+                        
+                        <smartForm:Group label="基本信息">
+                            <smartForm:GroupElement label="产品ID">
+                                <smartField:SmartField value="{ProductID}" editable="false"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="产品名称">
+                                <smartField:SmartField value="{ProductName}"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="供应商">
+                                <smartField:SmartField value="{SupplierID}"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="类别">
+                                <smartField:SmartField value="{CategoryID}"/>
+                            </smartForm:GroupElement>
+                        </smartForm:Group>
+                        
+                        <smartForm:Group label="库存信息">
+                            <smartForm:GroupElement label="单位数量">
+                                <smartField:SmartField value="{QuantityPerUnit}"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="单价">
+                                <smartField:SmartField value="{UnitPrice}"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="库存单位">
+                                <smartField:SmartField value="{UnitsInStock}"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="订单单位">
+                                <smartField:SmartField value="{UnitsOnOrder}"/>
+                            </smartForm:GroupElement>
+                        </smartForm:Group>
+                        
+                        <smartForm:Group label="状态信息">
+                            <smartForm:GroupElement label="重订等级">
+                                <smartField:SmartField value="{ReorderLevel}"/>
+                            </smartForm:GroupElement>
+                            <smartForm:GroupElement label="中止">
+                                <smartField:SmartField value="{Discontinued}"/>
+                            </smartForm:GroupElement>
+                        </smartForm:Group>
+                    </smartForm:SmartForm>
+
+                    <!-- 产品图表 -->
+                    <Panel headerText="产品库存分析" expandable="true" expanded="true">
+                        <viz:VizFrame id="stockChart"
+                            width="100%"
+                            height="300px"
+                            vizType="column">
+                            <viz:dataset>
+                                <viz.data:FlattenedDataset data="{/Products}">
+                                    <viz.data:dimensions>
+                                        <viz.data:DimensionDefinition name="产品名称"
+                                            value="{ProductName}" />
+                                    </viz.data:dimensions>
+                                    <viz.data:measures>
+                                        <viz.data:MeasureDefinition name="库存单位"
+                                            value="{UnitsInStock}" />
+                                        <viz.data:MeasureDefinition name="订单单位"
+                                            value="{UnitsOnOrder}" />
+                                    </viz.data:measures>
+                                </viz.data:FlattenedDataset>
+                            </viz:dataset>
+                            <viz:feeds>
+                                <viz.feeds:FeedItem id="valueAxisFeed" uid="valueAxis" type="Measure"
+                                    values="库存单位,订单单位" />
+                                <viz.feeds:FeedItem id="categoryAxisFeed" uid="categoryAxis" type="Dimension"
+                                    values="产品名称" />
+                            </viz:feeds>
+                        </viz:VizFrame>
+                    </Panel>
+                </Panel>
+            </layout:PaneContainer>
+        </layout:SplitPane>
+    </Page>
+</mvc:View>

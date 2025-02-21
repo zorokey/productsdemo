@@ -1,0 +1,136 @@
+{
+    "_version": "1.65.0",
+    "sap.app": {
+        "id": "productsdemo",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:basic",
+            "version": "1.16.3",
+            "toolsId": "bb8dac45-e09e-43d2-bec0-168e23dc87df"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/V2/Northwind/Northwind.svc/",
+                "type": "OData",
+                "settings": {
+                    "annotations": ["northwindAnnotations"],
+                    "localUri": "localService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            },
+            "northwindAnnotations": {
+                "uri": "localService/annotations.xml",
+                "type": "ODataAnnotation"
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.132.0",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "productsdemo.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {}
+                 
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ],
+            "js": [
+                {
+                "uri": "libs/xlsx.full.min.js"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "controlAggregation": "pages",
+                "controlId": "app",
+                "transition": "slide",
+                "type": "View",
+                "viewType": "XML",
+                "path": "productsdemo.view",
+                "async": true,
+                "viewPath": "productsdemo.view"
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "productList",
+                    "target": "productList"
+                },
+                {
+                    "pattern": "Products/{productId}",
+                    "name": "productDetail",
+                    "target": "productDetail"
+                }
+            ],
+            "targets": {
+                "productList": {
+                    "id": "ProductList",
+                    "viewName": "ProductList",
+                    "viewLevel": 1,
+                    "title": "{i18n>productListTitle}",
+                    "viewId": "productListViewId"
+                },
+                "productDetail": {
+                    "id": "ProductDetail",
+                    "viewName": "ProductDetail",
+                    "viewLevel": 2,
+                    "title": "{i18n>productDetailTitle}",
+                    "viewId": "productDetailViewId"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "productsdemo.view.App",
+            "type": "XML",
+            "id": "App"
+        }
+    }
+}
