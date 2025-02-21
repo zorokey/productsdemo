@@ -19,7 +19,6 @@
         id="productsSmartTable"
         entitySet="Products"
         tableType="ResponsiveTable"
-        useExportToExcel="true"
         useVariantManagement="true"
         useTablePersonalisation="true"
         header="Products"

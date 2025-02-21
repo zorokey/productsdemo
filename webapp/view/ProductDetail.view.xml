@@ -1,138 +1,264 @@
 <mvc:View
+    controllerName="productsdemo.controller.ProductDetail"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    xmlns:smartTable="sap.ui.comp.smarttable"
-    xmlns:smartForm="sap.ui.comp.smartform"
-    xmlns:smartField="sap.ui.comp.smartfield"
+    xmlns:f="sap.f"
     xmlns:layout="sap.ui.layout"
     xmlns:core="sap.ui.core"
-    xmlns:viz="sap.viz.ui5.controls"
-    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-    xmlns:viz.data="sap.viz.ui5.data"
-    xmlns:tree="sap.ui.table"
-    controllerName="productsdemo.controller.ProductDetail">
+    xmlns:smartForm="sap.ui.comp.smartform"
+    xmlns:smartField="sap.ui.comp.smartfield"
+    xmlns:chart="sap.suite.ui.microchart"
+    xmlns:tree="sap.ui.table">
 
-    <Page title="产品详情" showNavButton="true" navButtonPress="onNavBack">
-        <layout:SplitPane id="splitPane" orientation="Horizontal">
-            <!-- 左侧区域：产品类别树 -->
-            <layout:PaneContainer>
-                <layout:layoutData>
-                    <layout:SplitPaneLayoutData size="30%" resizable="true"/>
-                </layout:layoutData>
-                
-                <Panel headerText="产品类别层次结构" expandable="true" expanded="true" class="sapUiResponsiveMargin">
-                    <tree:TreeTable id="categoryTree"
-                        selectionMode="Single"
-                        enableSelectAll="false"
-                        rows="{path: '/Categories'}"
-                        visibleRowCount="15">
-                        <tree:extension>
-                            <Toolbar>
-                                <Title text="类别树" level="H2"/>
-                            </Toolbar>
-                        </tree:extension>
-                        <tree:columns>
-                            <tree:Column width="15rem">
-                                <Label text="类别名称" />
-                                <tree:template>
-                                    <Text text="{CategoryName}" wrapping="false" />
-                                </tree:template>
-                            </tree:Column>
-                            <tree:Column width="20rem">
-                                <Label text="描述" />
-                                <tree:template>
-                                    <Text text="{Description}" wrapping="true" />
-                                </tree:template>
-                            </tree:Column>
-                        </tree:columns>
-                    </tree:TreeTable>
-                </Panel>
-            </layout:PaneContainer>
-            
-            <!-- 右侧区域：产品详情表单 -->
-            <layout:PaneContainer>
-                <layout:layoutData>
-                    <layout:SplitPaneLayoutData size="70%" resizable="true"/>
-                </layout:layoutData>
-                
-                <Panel headerText="产品详情" expandable="true" expanded="true" class="sapUiResponsiveMargin">
-                    <smartForm:SmartForm id="productForm" 
-                                editable="false" 
-                                entityType="Products">
-                        <smartForm:layout>
-                            <smartForm:Layout columnsM="1" columnsL="2" columnsXL="2"/>
-                        </smartForm:layout>
-                        
-                        <smartForm:Group label="基本信息">
-                            <smartForm:GroupElement label="产品ID">
-                                <smartField:SmartField value="{ProductID}" editable="false"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="产品名称">
-                                <smartField:SmartField value="{ProductName}"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="供应商">
-                                <smartField:SmartField value="{SupplierID}"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="类别">
-                                <smartField:SmartField value="{CategoryID}"/>
-                            </smartForm:GroupElement>
-                        </smartForm:Group>
-                        
-                        <smartForm:Group label="库存信息">
-                            <smartForm:GroupElement label="单位数量">
-                                <smartField:SmartField value="{QuantityPerUnit}"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="单价">
-                                <smartField:SmartField value="{UnitPrice}"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="库存单位">
-                                <smartField:SmartField value="{UnitsInStock}"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="订单单位">
-                                <smartField:SmartField value="{UnitsOnOrder}"/>
-                            </smartForm:GroupElement>
-                        </smartForm:Group>
-                        
-                        <smartForm:Group label="状态信息">
-                            <smartForm:GroupElement label="重订等级">
-                                <smartField:SmartField value="{ReorderLevel}"/>
-                            </smartForm:GroupElement>
-                            <smartForm:GroupElement label="中止">
-                                <smartField:SmartField value="{Discontinued}"/>
-                            </smartForm:GroupElement>
-                        </smartForm:Group>
-                    </smartForm:SmartForm>
+    <f:DynamicPage id="productDetailPage" title="{i18n>productDetailTitle}" toggleHeaderOnTitleClick="false" fitContent="true" preserveHeaderStateOnScroll="true">
+        <f:title>
+            <f:DynamicPageTitle id="productDetailPageTitle">
+                <f:heading>
+                    <FlexBox id="titleFlexBox" alignItems="Center" justifyContent="Start">
+                        <items>
+                            <core:Icon id="productIcon" src="sap-icon://product" size="1.5rem" class="sapUiTinyMarginEnd"/>
+                            <Title id="productNameTitle" text="{ProductName}" level="H2"/>
+                        </items>
+                    </FlexBox>
+                </f:heading>
+                <f:snappedContent>
+                    <Text id="snappedProductInfo" text="ID: {ProductID} - {i18n>category}: {CategoryID}"/>
+                </f:snappedContent>
+                <f:actions>
+                    <Button 
+                        id="editButton"
+                        text="{i18n>edit}"
+                        type="Emphasized"
+                        visible="{= !${local>/editMode}}"
+                        press="onEditButtonPress"/>
+                    <Button 
+                        id="saveButton"
+                        text="{i18n>save}"
+                        type="Accept"
+                        visible="{local>/editMode}"
+                        press="onSaveButtonPress"/>
+                    <Button 
+                        id="cancelButton"
+                        text="{i18n>cancel}"
+                        type="Reject"
+                        visible="{local>/editMode}"
+                        press="onCancelButtonPress"/>
+                </f:actions>
+            </f:DynamicPageTitle>
+        </f:title>
 
-                    <!-- 产品图表 -->
-                    <Panel headerText="产品库存分析" expandable="true" expanded="true">
-                        <viz:VizFrame id="stockChart"
-                            width="100%"
-                            height="300px"
-                            vizType="column">
-                            <viz:dataset>
-                                <viz.data:FlattenedDataset data="{/Products}">
-                                    <viz.data:dimensions>
-                                        <viz.data:DimensionDefinition name="产品名称"
-                                            value="{ProductName}" />
-                                    </viz.data:dimensions>
-                                    <viz.data:measures>
-                                        <viz.data:MeasureDefinition name="库存单位"
-                                            value="{UnitsInStock}" />
-                                        <viz.data:MeasureDefinition name="订单单位"
-                                            value="{UnitsOnOrder}" />
-                                    </viz.data:measures>
-                                </viz.data:FlattenedDataset>
-                            </viz:dataset>
-                            <viz:feeds>
-                                <viz.feeds:FeedItem id="valueAxisFeed" uid="valueAxis" type="Measure"
-                                    values="库存单位,订单单位" />
-                                <viz.feeds:FeedItem id="categoryAxisFeed" uid="categoryAxis" type="Dimension"
-                                    values="产品名称" />
-                            </viz:feeds>
-                        </viz:VizFrame>
+        <f:header>
+            <f:DynamicPageHeader id="productPageHeader" pinnable="false">
+                <FlexBox id="headerFlexBox" alignItems="Start" justifyContent="SpaceBetween">
+                    <items>
+                        <ObjectAttribute id="productIdAttribute" title="{i18n>productId}" text="{ProductID}"/>
+                        <ObjectAttribute id="supplierAttribute" title="{i18n>supplier}" text="{SupplierID}"/>
+                        <ObjectStatus id="stockStatus" 
+                            title="{i18n>stockStatus}" 
+                            text="{= ${UnitsInStock} > 0 ? ${i18n>inStock} : ${i18n>outOfStock} }"
+                            state="{= ${UnitsInStock} > 0 ? 'Success' : 'Error' }"/>
+                    </items>
+                </FlexBox>
+            </f:DynamicPageHeader>
+        </f:header>
+
+        <f:content>
+            <layout:FixFlex id="mainFixFlex" fixContentSize="350px">
+                <layout:fixContent>
+                    <Panel id="categoryHierarchyPanel" headerText="{i18n>categoryHierarchy}" expandable="true" expanded="true" width="auto" class="sapUiNoMarginBottom sapUiTinyMarginBeginEnd" backgroundDesign="Solid">
+                        <tree:TreeTable
+                            id="categoryTree"
+                            rows="{local>/categoryTree}"
+                            selectionMode="Single"
+                            enableSelectAll="false"
+                            visibleRowCount="6"
+                            rowHeight="28px"
+                            minAutoRowCount="3"
+                            fixedRowCount="0">
+                            <tree:extension>
+                                <Toolbar id="categoryTreeToolbar" style="Clear" height="2rem">
+                                    <Title id="categoryTreeTitle" text="{i18n>categoryTree}" level="H3"/>
+                                </Toolbar>
+                            </tree:extension>
+                            <tree:columns>
+                                <tree:Column id="categoryNameColumn" width="100%">
+                                    <Label id="categoryNameLabel" text="{i18n>categoryName}"/>
+                                    <tree:template>
+                                        <Text id="categoryNameText" text="{local>CategoryName}" wrapping="false"/>
+                                    </tree:template>
+                                </tree:Column>
+                            </tree:columns>
+                        </tree:TreeTable>
                     </Panel>
-                </Panel>
-            </layout:PaneContainer>
-        </layout:SplitPane>
-    </Page>
+                    
+                    <!-- 类别详情 -->
+                    <Panel id="selectedCategoryPanel" headerText="{i18n>selectedCategoryDetails}" expandable="true" expanded="true" backgroundDesign="Solid" width="auto" class="sapUiTinyMarginBeginEnd">
+                        <FlexBox id="categoryDetailsFlexBox" direction="Column" width="100%" class="sapUiTinyMargin">
+                            <FlexBox id="categoryIdFlexBox" alignItems="Center" class="sapUiTinyMarginBottom">
+                                <Label id="categoryIdLabel" text="{i18n>categoryId}:" class="sapUiTinyMarginEnd productLabel"/>
+                                <ObjectNumber id="categoryIdValue" number="{local>/selectedCategory/CategoryID}" emphasized="false"/>
+                            </FlexBox>
+                            <FlexBox id="categoryNameFlexBox" alignItems="Center" class="sapUiTinyMarginBottom">
+                                <Label id="categoryNameDetailsLabel" text="{i18n>categoryName}:" class="sapUiTinyMarginEnd productLabel"/>
+                                <Text id="categoryNameDetailsText" text="{local>/selectedCategory/CategoryName}"/>
+                            </FlexBox>
+                            <FlexBox id="categoryDescFlexBox" alignItems="Start">
+                                <Label id="categoryDescriptionLabel" text="{i18n>description}:" class="sapUiTinyMarginEnd productLabel sapUiTinyMarginTop"/>
+                                <Text id="categoryDescriptionText" text="{local>/selectedCategory/Description}" width="80%"/>
+                            </FlexBox>
+                        </FlexBox>
+                    </Panel>
+                </layout:fixContent>
+
+                <layout:flexContent>
+                    <ScrollContainer id="productDetailContainer" height="100%" width="100%" vertical="true" horizontal="false">
+                        <FlexBox id="productContentFlexBox" direction="Column" width="100%" class="sapUiNoMarginTop">
+                            <!-- 产品基本信息卡片 -->
+                            <Panel id="basicInfoPanel" headerText="{i18n>basicInformation}" expandable="true" expanded="true" class="sapUiTinyMarginBeginEnd" backgroundDesign="Solid">
+                                <FlexBox id="productInfoFlexBox" wrap="Wrap" justifyContent="SpaceBetween" class="sapUiTinyMargin">
+                                    <FlexBox id="productNameFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="45%">
+                                        <Label id="productNameLabel" text="{i18n>productName}" design="Bold"/>
+                                        <Input id="productNameInput" value="{ProductName}" editable="{local>/editMode}" class="sapUiTinyMarginTop"/>
+                                    </FlexBox>
+                                    <FlexBox id="supplierFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="45%">
+                                        <Label id="supplierLabel" text="{i18n>supplier}" design="Bold"/>
+                                        <Select id="supplierSelect" selectedKey="{SupplierID}" enabled="{local>/editMode}" class="sapUiTinyMarginTop" width="100%">
+                                            <core:Item id="supplier1" key="1" text="Exotic Liquids"/>
+                                            <core:Item id="supplier2" key="2" text="New Orleans Cajun Delights"/>
+                                        </Select>
+                                    </FlexBox>
+                                    <FlexBox id="categoryFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="45%">
+                                        <Label id="categoryLabel" text="{i18n>category}" design="Bold"/>
+                                        <Select id="categorySelect" selectedKey="{CategoryID}" enabled="{local>/editMode}" class="sapUiTinyMarginTop" width="100%">
+                                            <core:Item id="category1" key="1" text="Beverages"/>
+                                            <core:Item id="category2" key="2" text="Condiments"/>
+                                        </Select>
+                                    </FlexBox>
+                                    <FlexBox id="quantityFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="45%">
+                                        <Label id="quantityLabel" text="{i18n>quantityPerUnit}" design="Bold"/>
+                                        <Input id="quantityInput" value="{QuantityPerUnit}" editable="{local>/editMode}" class="sapUiTinyMarginTop"/>
+                                    </FlexBox>
+                                </FlexBox>
+                            </Panel>
+                            
+                            <!-- 定价和库存信息 -->
+                            <Panel id="pricingPanel" headerText="{i18n>pricingAndInventory}" expandable="true" expanded="true" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTop" backgroundDesign="Solid">
+                                <VBox id="pricingBox" class="sapUiTinyMargin">
+                                    <FlexBox id="inventoryFlexBox" wrap="Wrap" justifyContent="SpaceBetween">
+                                        <FlexBox id="priceFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="30%">
+                                            <Label id="priceLabel" text="{i18n>unitPrice}" design="Bold"/>
+                                            <FlexBox id="priceInputBox" alignItems="Center" class="sapUiTinyMarginTop">
+                                                <Input id="priceInput" value="{UnitPrice}" editable="{local>/editMode}" type="Number" width="80%"/>
+                                                <core:Icon id="currencyIcon" src="sap-icon://currency" class="sapUiTinyMarginBegin"/>
+                                            </FlexBox>
+                                        </FlexBox>
+                                        <FlexBox id="stockFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="30%">
+                                            <Label id="stockLabel" text="{i18n>unitsInStock}" design="Bold"/>
+                                            <StepInput id="stockStepInput" value="{UnitsInStock}" editable="{local>/editMode}" min="0" max="1000" step="1" class="sapUiTinyMarginTop"/>
+                                        </FlexBox>
+                                        <FlexBox id="orderFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="30%">
+                                            <Label id="orderLabel" text="{i18n>unitsOnOrder}" design="Bold"/>
+                                            <StepInput id="orderStepInput" value="{UnitsOnOrder}" editable="{local>/editMode}" min="0" max="1000" step="1" class="sapUiTinyMarginTop"/>
+                                        </FlexBox>
+                                    </FlexBox>
+                                    
+                                    <FlexBox id="inventoryStatusFlexBox" wrap="Wrap" justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
+                                        <FlexBox id="reorderFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="30%">
+                                            <Label id="reorderLabel" text="{i18n>reorderLevel}" design="Bold"/>
+                                            <StepInput id="reorderStepInput" value="{ReorderLevel}" editable="{local>/editMode}" min="0" max="100" step="5" class="sapUiTinyMarginTop"/>
+                                        </FlexBox>
+                                        <FlexBox id="discontinuedFlexBox" direction="Column" class="sapUiSmallMarginEnd sapUiSmallMarginBottom" width="65%">
+                                            <Label id="discontinuedLabel" text="{i18n>discontinued}" design="Bold"/>
+                                            <Switch id="discontinuedSwitch" state="{= !${Discontinued}}" enabled="{local>/editMode}" customTextOn="No" customTextOff="Yes" class="sapUiTinyMarginTop"/>
+                                        </FlexBox>
+                                    </FlexBox>
+                                    
+                                    <!-- 库存图表 -->
+                                    <FlexBox id="inventoryChartFlexBox" justifyContent="SpaceBetween" alignItems="End" class="sapUiMediumMarginTop">
+                                        <FlexBox id="stockChartBox" direction="Column" width="48%">
+                                            <Title id="stockChartTitle" text="{i18n>stockLevel}" level="H3" titleStyle="H5" class="sapUiTinyMarginBottom"/>
+                                                <chart:RadialMicroChart id="stockLevelChart" size="M" percentage="{= Math.min(${UnitsInStock}/${ReorderLevel} * 100, 100) }" valueColor="{= ${UnitsInStock} &lt; ${ReorderLevel} ? 'Critical' : 'Good' }"/>
+                                        </FlexBox>
+                                        <FlexBox id="orderChartBox" direction="Column" width="48%">
+                                            <Title id="orderChartTitle" text="{i18n>orderRatio}" level="H3" titleStyle="H5" class="sapUiTinyMarginBottom"/>
+                                            <chart:ComparisonMicroChart id="orderComparisonChart" size="M" colorPalette="['Good', 'Critical']">
+                                                <chart:data>
+                                                    <chart:ComparisonMicroChartData id="stockData" title="{i18n>inStock}" value="{UnitsInStock}" color="Good"/>
+                                                    <chart:ComparisonMicroChartData id="orderData" title="{i18n>onOrder}" value="{UnitsOnOrder}" color="Critical"/>
+                                                </chart:data>
+                                            </chart:ComparisonMicroChart>
+                                        </FlexBox>
+                                    </FlexBox>
+                                </VBox>
+                            </Panel>
+                            
+                            <!-- 相关产品 -->
+                            <Panel id="relatedProductsPanel" headerText="{i18n>relatedProducts}" expandable="true" expanded="true" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTop" backgroundDesign="Solid">
+                                <Table
+                                    id="relatedProductsTable"
+                                    items="{local>/relatedProducts}"
+                                    growing="true"
+                                    growingThreshold="5"
+                                    growingScrollToLoad="true"
+                                    alternateRowColors="true"
+                                    inset="false">
+                                    <headerToolbar>
+                                        <Toolbar id="relatedProductsToolbar">
+                                            <Title id="relatedProductsTitle" text="{i18n>sameCategory}" level="H3" titleStyle="H5"/>
+                                            <ToolbarSpacer id="relatedToolbarSpacer"/>
+                                            <Select id="relatedSortSelect" width="12rem">
+                                                <core:Item id="sortPrice" key="price" text="{i18n>sortByPrice}"/>
+                                                <core:Item id="sortName" key="name" text="{i18n>sortByName}"/>
+                                                <core:Item id="sortStock" key="stock" text="{i18n>sortByStock}"/>
+                                            </Select>
+                                        </Toolbar>
+                                    </headerToolbar>
+                                    <columns>
+                                        <Column id="relatedProductIdColumn" width="15%" hAlign="Begin" minScreenWidth="Small" demandPopin="true">
+                                            <Text id="relatedProductIdText" text="{i18n>productId}"/>
+                                        </Column>
+                                        <Column id="relatedProductNameColumn" width="40%" hAlign="Begin">
+                                            <Text id="relatedProductNameText" text="{i18n>productName}"/>
+                                        </Column>
+                                        <Column id="relatedProductPriceColumn" width="20%" hAlign="End" minScreenWidth="Small" demandPopin="true">
+                                            <Text id="relatedProductPriceText" text="{i18n>unitPrice}"/>
+                                        </Column>
+                                        <Column id="relatedProductStockColumn" width="20%" hAlign="End" minScreenWidth="Medium" demandPopin="true">
+                                            <Text id="relatedProductStockText" text="{i18n>unitsInStock}"/>
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem id="relatedProductItem" type="Navigation" press="onRelatedProductPress">
+                                            <cells>
+                                                <ObjectIdentifier id="relatedProductId" title="{local>ProductID}"/>
+                                                <ObjectIdentifier id="relatedProductName" title="{local>ProductName}" text="{local>QuantityPerUnit}"/>
+                                                <ObjectNumber id="relatedProductPriceValue"
+                                                    number="{ 
+                                                        path: 'local>UnitPrice',
+                                                        formatter: '.formatter.formatAmount'
+                                                    }"
+                                                    unit="$"
+                                                    state="{= ${local>UnitPrice} > 20 ? 'Error' : 'Success' }"/>
+                                                <ObjectStatus id="relatedProductStockStatus"
+                                                    text="{local>UnitsInStock}"
+                                                    state="{= ${local>UnitsInStock} > 0 ? 'Success' : 'Error' }"/>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </Panel>
+                        </FlexBox>
+                    </ScrollContainer>
+                </layout:flexContent>
+            </layout:FixFlex>
+        </f:content>
+
+        <f:footer>
+            <OverflowToolbar id="detailPageFooter" style="Clear" height="3rem">
+                <Button id="showHistoryButton" icon="sap-icon://history" text="{i18n>showHistory}" type="Transparent"/>
+                <ToolbarSpacer id="detailPageFooterSpacer"/>
+                <Button id="backToListButton" type="Back" text="{i18n>backToList}" press="onNavBack"/>
+            </OverflowToolbar>
+        </f:footer>
+    </f:DynamicPage>
 </mvc:View>
