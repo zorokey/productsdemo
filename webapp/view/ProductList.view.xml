@@ -3,10 +3,12 @@
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
   xmlns:smartTable="sap.ui.comp.smarttable"
-  xmlns:smartFilterBar="sap.ui.comp.smartfilterbar">
+  xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+  xmlns:vbm="sap.ui.vbm">
   
   <Page id="productListPage" title="{i18n>productListTitle}">
     <content>
+      <vbm:GeoMap id="id_Map" width="50rem" xmlns:l="sap.ui.layout" height="50rem"/>
       <VBox id="productListVBox">
         <smartFilterBar:SmartFilterBar 
           id="smartFilterBar" 
@@ -41,6 +43,10 @@
               icon="sap-icon://excel-attachment"
               type="Emphasized"
               press="onExportWithVBA" />
+              <Button id="showMapButton" 
+                  text="显示地图" 
+                  icon="sap-icon://map" 
+                  press=".onShowMapButtonPress"/>
           </OverflowToolbar>
         </smartTable:customToolbar>
         <Table id="productsTable" mode="SingleSelectMaster" itemPress="onProductItemPress">

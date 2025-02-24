@@ -32,7 +32,7 @@
                     <Collection>
                         <PropertyPath>ProductID</PropertyPath>
                         <PropertyPath>ProductName</PropertyPath>
-                        
+                        <PropertyPath>UnitPrice</PropertyPath>
                     </Collection>
                 </Annotation>
 

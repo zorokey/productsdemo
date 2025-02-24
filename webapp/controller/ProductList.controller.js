@@ -31,6 +31,38 @@ sap.ui.define([
         oTable.attachItemPress(this.onProductItemPress, this);
       }.bind(this));
 
+      //TEST
+			var oGeoMap = this.getView().byId("id_Map");
+			// Define the map configuration including the custom provider
+			var oMapConfig = {
+				"MapProvider": [{
+					"name": "CSDI",
+					"type": "CSDITerrainMap",
+					"description": "This is the CSDI map.",
+					"tileX": "256",
+					"tileY": "256",
+					"maxLOD": "25",
+					"copyright": "Copyright by CSDI",
+					"Source": [{
+						"id": "s1",
+						"url": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/HK80"
+					}]
+				}],
+				"MapLayerStacks": [{
+					"name": "DEFAULT",
+					"MapLayer": {
+						"name": "layer1",
+						"refMapProvider": "CSDI",
+						"opacity": "1.0",
+						"colBkgnd": "RGB(255,255,255)"
+					}
+				}]
+			};
+
+			// Set the map configuration to the GeoMap
+			oGeoMap.setMapConfiguration(oMapConfig);
+			oGeoMap.setRefMapLayerStack("DEFAULT");
+
     },
 
     _onPatternMatched: function () {
@@ -147,7 +179,80 @@ sap.ui.define([
     //   });
     // },
 
+    // 按钮点击事件处理函数
+    onShowMapButtonPress: function () {
+      // 如果弹窗不存在，创建它
+      if (!this._oMapDialog) {
+        this._oMapDialog = new sap.m.Dialog({
+          title: "地图查看器",
+          contentWidth: "800px",
+          contentHeight: "600px",
+          content: new sap.ui.core.HTML({
+            content: "<div id='mapContainer' style='width:100%;height:100%;'></div>"
+          }),
+          beginButton: new sap.m.Button({
+            text: "关闭",
+            press: function () {
+              this._oMapDialog.close();
+            }.bind(this)
+          }),
+          afterOpen: function () {
+            // 弹窗完全打开后初始化地图
+            setTimeout(function () {
+              this._initializeMap();
+            }.bind(this), 300);
+          }.bind(this)
+        });
 
+        // 将弹窗添加到当前视图
+        this.getView().addDependent(this._oMapDialog);
+      }
+
+      // 打开弹窗
+      this._oMapDialog.open();
+    },
+
+    // 初始化地图的函数
+    _initializeMap: function () {
+      // 创建地图实例并附加到容器
+      var oGeoMap = new sap.ui.vbm.GeoMap({
+        width: "100%",
+        height: "100%"
+      });
+
+      // 定义地图配置
+      var oMapConfig = {
+        "MapProvider": [{
+          "name": "CSDI",
+          "type": "CSDITerrainMap",
+          "description": "This is the CSDI map.",
+          "tileX": "256",
+          "tileY": "256",
+          "maxLOD": "25",
+          "copyright": "Copyright by CSDI",
+          "Source": [{
+            "id": "s1",
+            "url": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/HK80"
+          }]
+        }],
+        "MapLayerStacks": [{
+          "name": "DEFAULT",
+          "MapLayer": {
+            "name": "layer1",
+            "refMapProvider": "CSDI",
+            "opacity": "1.0",
+            "colBkgnd": "RGB(255,255,255)"
+          }
+        }]
+      };
+
+      // 设置地图配置
+      oGeoMap.setMapConfiguration(oMapConfig);
+      oGeoMap.setRefMapLayerStack("DEFAULT");
+
+      // 将地图放置到弹窗容器内
+      oGeoMap.placeAt("mapContainer");
+    },
 
     getRouter: function () {
       return this.getOwnerComponent().getRouter();
