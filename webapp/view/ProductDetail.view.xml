@@ -76,10 +76,7 @@
                                     rows="{local>/categoryTree}"
                                     selectionMode="Single"
                                     enableSelectAll="false"
-                                    visibleRowCount="6"
-                                    rowHeight="28px"
-                                    minAutoRowCount="3"
-                                    fixedRowCount="0">
+                                    >
                                     <tree:extension>
                                         <Toolbar id="categoryTreeToolbar" style="Clear" height="2rem">
                                             <Title id="categoryTreeTitle" text="{i18n>categoryTree}" level="H3"/>

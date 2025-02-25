@@ -49,6 +49,10 @@
     },
     "sap.ui5": {
         "flexEnabled": true,
+        "viewNamespace": "productsdemo.view",
+        "viewPath": "productsdemo.view",
+        "componentName": "productsdemo.Component",
+        
         "dependencies": {
             "minUI5Version": "1.132.0",
             "libs": {
@@ -79,11 +83,15 @@
             "css": [
                 {
                     "uri": "css/style.css"
+                }, {
+                    "uri": "libs/ol/ol.css"
                 }
             ],
             "js": [
                 {
-                "uri": "libs/xlsx.full.min.js"
+                    "uri": "libs/xlsx.full.min.js"
+                },{
+                    "uri": "libs/ol/ol.js"
                 }
             ]
         },
